@@ -7,7 +7,8 @@ import tornado.web
 from tornado.options import define, options
 from urls import urlList
 
-define("port", default=8090, help="run on the given port", type=int)
+
+define("port", default=4000, help="run on the given port", type=int)
 
 class EducationPortal(tornado.web.Application):
 
