@@ -11,15 +11,19 @@ import uuid, os
 
 import jdatetime
 
+from config import Config
+
+c = Config()
+
 
 class UploadImageUserHandler(TornadoRequestBase):
     @authentication()
     def post(self, *args, **kwargs):
         picture_address = self.user['picture_address']
         file = self.request.files['file'][0]
-        file2 = "static/upload/user_images/"
+        file2 = os.path.join(c.static_path, "upload", "user_images")
         if not os.path.exists(file2): os.makedirs(file2)
-        output_file = open("static/upload/user_images/" + picture_address, 'wb')
+        output_file = open(os.path.join(file2, picture_address), 'wb')
         output_file.write(file['body'])
 
 
@@ -91,7 +95,7 @@ class add_buy_Handler(TornadoRequestBase):
         concern = self.get_argument('concern')
         partners = self.get_arguments('partners')
         count = len(partners)
-        per_share = int(amount)/count
+        per_share = int(amount) / count
         id_admin = self.user['id_admin']
         date = self.get_argument('date')
         bool_accept = False
@@ -127,6 +131,7 @@ class add_buy_Handler(TornadoRequestBase):
                 update_account.execute()
 
         self.write('success')
+
 
 class subscribers_Handler(TornadoRequestBase):
     @authentication()
@@ -373,9 +378,11 @@ class tinyconsumption_Handler(TornadoRequestBase):
         last_list_buy = last_list_buy[page * 5: (page + 1) * 5]
 
         if type_user:
-            self.render('admin/tinyconsumption.html', date=date, user=self.user, list_buy=last_list_buy, pagination=pagination)
+            self.render('admin/tinyconsumption.html', date=date, user=self.user, list_buy=last_list_buy,
+                        pagination=pagination)
         else:
-            self.render('user/tinyconsumption.html', date=date, user=self.user, list_buy=last_list_buy, pagination=pagination)
+            self.render('user/tinyconsumption.html', date=date, user=self.user, list_buy=last_list_buy,
+                        pagination=pagination)
 
 
 class profile_Handler(TornadoRequestBase):
@@ -569,12 +576,13 @@ class delbuy_Handler(TornadoRequestBase):
 
         find_user = User().select().where(User.User == self.session.get('id_admin')).dicts()
         for i in find_user:
-                # try:
-                #     find_user1 = User.select().where(User.User == self.session.get('id_admin'), User.account == i['account']).get()
-                #     find_user1 = find_user1.account
-                # except:
-                #     find_user1 = False
-                account2 = i['account'] - per_share
-                User.update(account=account2).where(User.User == self.session.get('id_admin'), User.account == i['account']).execute()
+            # try:
+            #     find_user1 = User.select().where(User.User == self.session.get('id_admin'), User.account == i['account']).get()
+            #     find_user1 = find_user1.account
+            # except:
+            #     find_user1 = False
+            account2 = i['account'] - per_share
+            User.update(account=account2).where(User.User == self.session.get('id_admin'),
+                                                User.account == i['account']).execute()
 
 
