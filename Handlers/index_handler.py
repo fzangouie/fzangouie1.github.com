@@ -149,9 +149,9 @@ class register_Handler(TornadoRequestBase):
                 original_fname = file['filename']
                 type_image = original_fname.split(".")[-1]
                 address_image = str(uuid.uuid4()) + ".jpg"
-                file2 = "static/upload/user_images/"
+                file2 = "/var/www/ftm/static/upload/user_images"
                 if not os.path.exists(file2): os.makedirs(file2)
-                output_file = open("static/upload/user_images/" + address_image, 'wb')
+                output_file = open(os.path.join(file2 , address_image), 'wb')
                 output_file.write(file['body'])
             except:
                 bool_acept = True
@@ -160,11 +160,6 @@ class register_Handler(TornadoRequestBase):
                 return
 
 
-        if len(password) < 5:
-            bool_acept = True
-            dict_u = {"msg":'پسودرد حداقل باید 6 کاراکتر باشد.' }
-            self.write(dict_u)
-            return
         if not update_check:
             repeat_password = self.get_argument('repeat_Pass')
             if password != repeat_password:
